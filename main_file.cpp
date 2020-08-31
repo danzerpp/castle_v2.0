@@ -52,7 +52,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		cameraPos -= cameraSpeed * cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		yaw += 5;
+		yaw -= 10;
 		//pitch += yoffset;
 		if (pitch > 89.0f)
 			pitch = 89.0f;
@@ -68,7 +68,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		yaw -= 10;
+		yaw += 10;
 		//pitch += yoffset;
 		if (pitch > 89.0f)
 			pitch = 89.0f;
@@ -84,7 +84,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
-		pitch -= 10;
+		pitch += 10;
 		//pitch += yoffset;
 		if (pitch > 89.0f)
 			pitch = 89.0f;
@@ -100,7 +100,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
 	{
-		pitch += 10;
+		pitch -= 10;
 		//pitch += yoffset;
 		if (pitch > 89.0f)
 			pitch = 89.0f;

@@ -100,8 +100,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
 	{
+
 		pitch -= 10;
 		//pitch += yoffset;
+
 		if (pitch > 89.0f)
 			pitch = 89.0f;
 		if (pitch < -89.0f)
@@ -156,7 +158,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glClearColor(0, 0, 1, 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
-	tex = readTexture("bricks.png");
+	tex = readTexture("whiteBricks.png");
 
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -218,9 +220,9 @@ void freeOpenGLProgram(GLFWwindow* window) {
 //
 //}
 
-void ptica(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+void drawGround(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	//Przykładowe tablice dla tego zadania - możliwości jest bardzo dużo
-	float birdVertices[] = {
+	float groundVertices[] = {
 		100,-1,100,1,
 		100,-1,-100,1,
 		-100,-1,100,1,
@@ -230,7 +232,7 @@ void ptica(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 		100,-1,-100,1,
 	};
 
-	float birdColors[] = {
+	float groundColors[] = {
 		0,1,0,1,
 		0,1,0,1,
 		0,1,0,1,
@@ -248,10 +250,10 @@ void ptica(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
 	glEnableVertexAttribArray(spColored->a("vertex"));
-	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, birdVertices); //Współrzędne wierzchołków bierz z tablicy birdVertices
+	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, groundVertices); //Współrzędne wierzchołków bierz z tablicy birdVertices
 
 	glEnableVertexAttribArray(spColored->a("color"));
-	glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, false, 0, birdColors); //Współrzędne wierzchołków bierz z tablicy birdColors
+	glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, false, 0, groundColors); //Współrzędne wierzchołków bierz z tablicy birdColors
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -422,12 +424,15 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 
 
 
-	ptica(P, V, M);
+	drawGround(P, V, M);
 	//kostka(P, V, M);
 	
-	for (float i = 3; i < 100; i=i+2)
+	//MUR
+
+
+	for (float i = -25; i < 26; i = i + 2)
 	{
-		for (float j = 0; j <= 2; j = j + 2)
+		for (float j = 36; j <= 40; j = j + 2)
 		{
 			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 			M = glm::translate(M, glm::vec3(i, 0.0f, j));
@@ -443,7 +448,64 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 		}
 	}
 
-	for (float i = 3; i < 100; i= i+4)
+
+	for (float i = 3; i < 26; i=i+2)
+	{
+		for (float j = 0; j <= 4; j = j + 2)
+		{
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 0.0f, j));
+			texKostka(P, V, M);
+
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 2.0f, j));
+			texKostka(P, V, M);
+
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 4.0f, j));
+			texKostka(P, V, M);
+		}
+	}
+
+
+
+	for (float i = 6; i < 41; i = i + 2)
+	{
+		for (float j = 21; j <= 25; j = j + 2)
+		{
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(j, 0.0f, i));
+			texKostka(P, V, M);
+
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(j, 2.0f, i));
+			texKostka(P, V, M);
+
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(j, 4.0f, i));
+			texKostka(P, V, M);
+		}
+	}
+
+	for (float i = 6; i < 41; i = i + 2)
+	{
+		for (float j = -21; j >= -25; j = j - 2)
+		{
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(j, 0.0f, i));
+			texKostka(P, V, M);
+
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(j, 2.0f, i));
+			texKostka(P, V, M);
+
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(j, 4.0f, i));
+			texKostka(P, V, M);
+		}
+	}
+
+	for (float i = 3; i < 32; i= i+4)
 	{
 		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 		M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
@@ -451,11 +513,9 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	}
 
 
-
-
-	for (float i = -3; i > -100; i = i - 2)
+	for (float i = -3; i > -26; i = i - 2)
 	{
-		for (float j = 0; j <= 2; j=j+2)
+		for (float j = 0; j <= 4; j=j+2)
 		{
 			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 			M = glm::translate(M, glm::vec3(i, 0.0f, j));
@@ -472,7 +532,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 		
 	}
 
-	for (float i = -3; i > -100; i = i -4)
+	for (float i = -3; i > -26; i = i -4)
 	{
 		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 		M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
@@ -493,6 +553,13 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	texKostka(P, V, M);
 	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 	M = glm::translate(M, glm::vec3(-1.0f, 4.0f, 2.0f));
+	texKostka(P, V, M);
+
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(1.0f, 4.0f, 4.0f));
+	texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-1.0f, 4.0f, 4.0f));
 	texKostka(P, V, M);
 
 

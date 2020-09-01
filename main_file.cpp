@@ -429,7 +429,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	
 	//MUR
 
-
+	//SCIANA TYŁ
 	for (float i = -25; i < 26; i = i + 2)
 	{
 		for (float j = 36; j <= 40; j = j + 2)
@@ -448,8 +448,27 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 		}
 	}
 
+	//SCIANA PRAWY PRZÓD
+	for (float i = -3; i > -26; i = i - 2)
+	{
+		for (float j = 0; j <= 4; j = j + 2)
+		{
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 0.0f, j));
+			texKostka(P, V, M);
 
-	for (float i = 3; i < 26; i=i+2)
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 2.0f, j));
+			texKostka(P, V, M);
+
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 4.0f, j));
+			texKostka(P, V, M);
+		}
+
+	}
+	//SCIANA LEWY PRZÓD DŁ = 24
+	for (float i = 3; i < 26; i=i+2) 
 	{
 		for (float j = 0; j <= 4; j = j + 2)
 		{
@@ -467,8 +486,31 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 		}
 	}
 
+	//WIEŻA LEWY PRZÓD
+	for (float i = 20; i <= 26; i = i + 2)
+	{
+		for (float j = -2; j <= 0; j = j + 2)
+		{
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 8.0f, j));
+			texKostka(P, V, M);
+
+			//M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			//M = glm::translate(M, glm::vec3(i, 8.0f, j));
+			//texKostka(P, V, M);
+
+			//M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			//M = glm::translate(M, glm::vec3(i, 8.0f, j));
+			//texKostka(P, V, M);
+
+			//M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			//M = glm::translate(M, glm::vec3(i, 8.0f, j));
+			//texKostka(P, V, M);
+		}
+	}
 
 
+	//SCIANA LEWA
 	for (float i = 6; i < 41; i = i + 2)
 	{
 		for (float j = 21; j <= 25; j = j + 2)
@@ -486,7 +528,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 			texKostka(P, V, M);
 		}
 	}
-
+	//SCIANA PRAWA
 	for (float i = 6; i < 41; i = i + 2)
 	{
 		for (float j = -21; j >= -25; j = j - 2)
@@ -504,40 +546,24 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 			texKostka(P, V, M);
 		}
 	}
+	
 
-	for (float i = 3; i < 32; i= i+4)
-	{
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
-		texKostka(P, V, M);
-	}
+	//for (float i = -26; i < 27; i= i+4)
+	//{
+	//	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	//	M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
+	//	texKostka(P, V, M);
+	//}
 
 
-	for (float i = -3; i > -26; i = i - 2)
-	{
-		for (float j = 0; j <= 4; j=j+2)
-		{
-			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-			M = glm::translate(M, glm::vec3(i, 0.0f, j));
-			texKostka(P, V, M);
+	
 
-			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-			M = glm::translate(M, glm::vec3(i, 2.0f, j));
-			texKostka(P, V, M);
-
-			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-			M = glm::translate(M, glm::vec3(i, 4.0f, j));
-			texKostka(P, V, M);
-		}
-		
-	}
-
-	for (float i = -3; i > -26; i = i -4)
-	{
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
-		texKostka(P, V, M);
-	}
+	//for (float i = -3; i > -26; i = i -4)
+	//{
+	//	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	//	M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
+	//	texKostka(P, V, M);
+	//}
 
 
 

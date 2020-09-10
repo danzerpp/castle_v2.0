@@ -25,6 +25,7 @@
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="myCube.h" />
+    <ClInclude Include="Bridge.h" />
     <ClInclude Include="s.h" />
     <ClInclude Include="shaderprogram.h" />
     <ClInclude Include="sphere.h" />
@@ -59,13 +60,13 @@
     <ProjectGuid>{7288C82C-3F3E-4501-8878-A310FCA284FE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>zaoszkielet02win</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

@@ -452,10 +452,10 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	drawBridge(P, V, M);
 
 	//kostka(P, V, M);
-	
+
 	//MUR
 
-
+	//SCIANA TYŁ
 	for (float i = -25; i < 26; i = i + 2)
 	{
 		for (float j = 36; j <= 40; j = j + 2)
@@ -474,8 +474,27 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 		}
 	}
 
+	//SCIANA PRAWY PRZÓD
+	for (float i = -3; i > -26; i = i - 2)
+	{
+		for (float j = 0; j <= 4; j = j + 2)
+		{
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 0.0f, j));
+			texKostka(P, V, M);
 
-	for (float i = 3; i < 26; i=i+2)
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 2.0f, j));
+			texKostka(P, V, M);
+
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, 4.0f, j));
+			texKostka(P, V, M);
+		}
+
+	}
+	//SCIANA LEWY PRZÓD DŁ = 24
+	for (float i = 3; i < 26; i = i + 2)
 	{
 		for (float j = 0; j <= 4; j = j + 2)
 		{
@@ -493,8 +512,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 		}
 	}
 
-
-
+	//SCIANA LEWA
 	for (float i = 6; i < 41; i = i + 2)
 	{
 		for (float j = 21; j <= 25; j = j + 2)
@@ -513,6 +531,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 		}
 	}
 
+	//SCIANA PRAWA
 	for (float i = 6; i < 41; i = i + 2)
 	{
 		for (float j = -21; j >= -25; j = j - 2)
@@ -530,40 +549,381 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 			texKostka(P, V, M);
 		}
 	}
-
-	for (float i = 3; i < 32; i= i+4)
+	//WIEŻA LEWY PRZÓD
+	for (float i = 19; i <= 29; i = i + 2)
 	{
 		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
+		M = glm::translate(M, glm::vec3(i, 0.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 2.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 4.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 6.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 8.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 10.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 12.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 14.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 16.0f, -4));
 		texKostka(P, V, M);
 	}
 
-
-	for (float i = -3; i > -26; i = i - 2)
-	{
-		for (float j = 0; j <= 4; j=j+2)
-		{
-			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-			M = glm::translate(M, glm::vec3(i, 0.0f, j));
-			texKostka(P, V, M);
-
-			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-			M = glm::translate(M, glm::vec3(i, 2.0f, j));
-			texKostka(P, V, M);
-
-			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-			M = glm::translate(M, glm::vec3(i, 4.0f, j));
-			texKostka(P, V, M);
-		}
-		
-	}
-
-	for (float i = -3; i > -26; i = i -4)
+	for (float j = -2; j <= 6; j = j + 2)
 	{
 		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
+		M = glm::translate(M, glm::vec3(29, 0.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 2.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 4.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 6.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 8.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 10.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 12.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 14.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 16.0f, j));
+		texKostka(P, V, M);
+
+	}
+	for (int i = 0; i <= 16; i = i + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(27, i, 6));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(19, i, -2));
 		texKostka(P, V, M);
 	}
+
+	//WIEŻA PRAWY PRZÓD
+	for (float i = -29; i <= -19; i = i + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 0.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 2.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 4.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 6.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 8.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 10.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 12.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 14.0f, -4));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 16.0f, -4));
+		texKostka(P, V, M);
+	}
+
+	for (float j = -4; j <= 6; j = j + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 0.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 2.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 4.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 6.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 8.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 10.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 12.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 14.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-27, 16.0f, j));
+		texKostka(P, V, M);
+
+	}
+	for (int i = 0; i <= 16; i = i + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-19, i, -2));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-27, i, 6));
+		texKostka(P, V, M);
+	}
+	//WIEŻA PRAWY TYŁ
+	for (float i = -29; i <= -19; i = i + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 0.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 2.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 4.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 6.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 8.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 10.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 12.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 14.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 16.0f, 44));
+		texKostka(P, V, M);
+	}
+
+	for (float j = 34; j <= 44; j = j + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 0.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 2.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 4.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 6.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 8.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 10.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 12.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 14.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-29, 16.0f, j));
+		texKostka(P, V, M);
+
+	}
+	for (int i = 0; i <= 16; i = i + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-27, i, 34));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-19, i, 42));
+		texKostka(P, V, M);
+	}
+
+	//WIEŻA LEWY TYŁ
+	for (float i = 19; i <= 29; i = i + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 0.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 2.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 4.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 6.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 8.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 10.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 12.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 14.0f, 44));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(i, 16.0f, 44));
+		texKostka(P, V, M);
+	}
+
+	for (float j = 34; j <= 44; j = j + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 0.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 2.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 4.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 6.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 8.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 10.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 12.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 14.0f, j));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(29, 16.0f, j));
+		texKostka(P, V, M);
+
+	}
+	for (int i = 0; i <= 16; i = i + 2)
+	{
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(27, i, 34));
+		texKostka(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(19, i, 42));
+		texKostka(P, V, M);
+	}
+
+	//for (float i = -26; i < 27; i= i+4)
+	//{
+	//	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	//	M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
+	//	texKostka(P, V, M);
+	//}
+
+
+
+
+	//for (float i = -3; i > -26; i = i -4)
+	//{
+	//	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	//	M = glm::translate(M, glm::vec3(i, 6.0f, 0.0f));
+	//	texKostka(P, V, M);
+	//}
 
 
 

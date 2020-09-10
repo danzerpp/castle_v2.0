@@ -113,4 +113,16 @@
       <Filter>Pliki zasobów</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\Downloads\bridgeTexture.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\..\Downloads\bridgeTex.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\..\Downloads\bridgeTe.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\..\..\..\projekty\projekt_zad_3_4\zao_szkielet_02_win\bricks234.png" />
+  </ItemGroup>
 </Project>

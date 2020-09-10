@@ -33,13 +33,18 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "lodepng.h"
 #include "shaderprogram.h"
 
-float speed_x = 0;//[radiany/s]
+float speed_x = 0.5f;//[radiany/s]
 float speed_y = 0;//[radiany/s]
-
+float water_speed = 1;
 GLuint tex;
+GLuint bridgeTex;
 float yaw = 90;
 float pitch = 0;
-
+//Bridge
+float angle_bridge = 0;
+bool getBridgeDown = false;
+float bridgeSpeed = 0;
+float time =0;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -118,7 +123,20 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 	//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+	{
+		if (getBridgeDown)
+		{
+			getBridgeDown = false;
+			bridgeSpeed = 30;
+		}
+		else
+		{
+			getBridgeDown = true;
+			bridgeSpeed = -30;
 
+		}
+	}
 
 }
 
@@ -156,12 +174,13 @@ GLuint readTexture(const char* filename) {
 void initOpenGLProgram(GLFWwindow* window) {
 	initShaders();
 	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
-	glClearColor(0, 0, 1, 1); //Ustaw kolor czyszczenia bufora kolorów
+	glClearColor(0, 1, 0, 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
 	tex = readTexture("whiteBricks.png");
-
+	bridgeTex = readTexture("bricks234.png");
 	glm::vec3 direction;
+
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -297,24 +316,67 @@ void kostka(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 void drawBridge(glm::mat4 P, glm::mat4 V, glm::mat4 M) 
 {
-	spColored->use(); //Aktywuj program cieniujący
-	M = glm::rotate(M, 44.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-	M = glm::translate(M, glm::vec3(0.0f, 1.0f, -1.0f));
-	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
-	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
-	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+	//spColored->use(); //Aktywuj program cieniujący
+	//glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	//glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	//glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
 
 
-	glEnableVertexAttribArray(spColored->a("vertex"));
-	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myBridgeVertices); //Współrzędne wierzchołków bierz z tablicy birdVertices
+	//glEnableVertexAttribArray(spColored->a("vertex"));
+	//glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myBridgeVertices); //Współrzędne wierzchołków bierz z tablicy birdVertices
 
-	glEnableVertexAttribArray(spColored->a("color"));
-	glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, false, 0, myCubeColors); //Współrzędne wierzchołków bierz z tablicy birdColors
+	//glEnableVertexAttribArray(spColored->a("color"));
+	//glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, false, 0, myCubeColors); //Współrzędne wierzchołków bierz z tablicy birdColors
 
-	glDrawArrays(GL_TRIANGLES, 0, myBridgeVertexCount);
+	//glDrawArrays(GL_TRIANGLES, 0, myBridgeVertexCount);
 
-	glDisableVertexAttribArray(spColored->a("vertex"));
-	glDisableVertexAttribArray(spColored->a("color"));
+	//glDisableVertexAttribArray(spColored->a("vertex"));
+	//glDisableVertexAttribArray(spColored->a("color"));
+
+
+	//Tablica ta raczej powinna znaleźć się w pliku myCube.h, ale umieściłem ją tutaj, żeby w tej procedurze zawrzeć (prawie) całe rozwiązanie zadania
+	//Reszta to wczytanie tekstury - czyli kawałki kodu, które trzeba przekopiować ze slajdów
+	float myCubeTexCoords[] = {
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+	};
+
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myBridgeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, bridgeTex);
+	glUniform1i(spTextured->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("color"));
 }
 
 void texKostka(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
@@ -432,25 +494,129 @@ void texKostka2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	glDisableVertexAttribArray(spLambertTextured->a("color"));
 	glDisableVertexAttribArray(spLambertTextured->a("normal"));
 }
+void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
+
+	int const count = 7200;
+	float myFlat[count];
+	int vertice = 0;
+	float myFlatColors[count];
+
+
+	for (float i = -30; i < 30; i=i+0.2f)
+	{
+		// pierwszy trójkąt
+		myFlat[vertice] = i;
+		myFlat[vertice + 1] = 0.5*cos(water_speed*(time + (30 + i)));
+		myFlat[vertice + 2] = 2;
+		myFlat[vertice + 3] = 1;
+
+		myFlatColors[vertice] = 0;
+		myFlatColors[vertice + 1] = 0;
+		myFlatColors[vertice + 2] = 1;
+		myFlatColors[vertice + 3] = 1;
+
+		myFlat[vertice + 4] = i;
+		myFlat[vertice + 5] = 0.5*cos(water_speed*(time + (30 + i)));
+		myFlat[vertice + 6] = -2;
+		myFlat[vertice + 7] = 1;
+
+		myFlatColors[vertice +4] = 0;
+		myFlatColors[vertice + 5] = 0;
+		myFlatColors[vertice + 6] = 1;
+		myFlatColors[vertice + 7] = 1;
+
+		myFlat[vertice + 8] = i + 0.2f;
+		myFlat[vertice + 9] =0.5*cos(water_speed*(time + (30 + i + 0.2f)));;
+		myFlat[vertice + 10] = 2;
+		myFlat[vertice + 11] = 1;
+
+		myFlatColors[vertice + 8] = 0;
+		myFlatColors[vertice + 9] = 0;
+		myFlatColors[vertice + 10] = 1;
+		myFlatColors[vertice + 11] = 1;
+
+		// drugi trójkąt
+		myFlat[vertice + 12] = i;
+		myFlat[vertice + 13] = 0.5*cos(water_speed*(time + (30 + i)));
+		myFlat[vertice + 14] = -2;
+		myFlat[vertice + 15] = 1;
+
+		myFlatColors[vertice + 12] = 0;
+		myFlatColors[vertice + 13] = 0;
+		myFlatColors[vertice + 14] = 1;
+		myFlatColors[vertice + 15] = 1;
+
+		myFlat[vertice + 16] = i + 0.2f;
+		myFlat[vertice + 17] = 0.5*cos(water_speed*(time + (30 + i + 0.2f)));
+		myFlat[vertice + 18] = -2;
+		myFlat[vertice + 19] = 1;
+
+		myFlatColors[vertice + 16] = 0;
+		myFlatColors[vertice + 17] = 0;
+		myFlatColors[vertice + 18] = 1;
+		myFlatColors[vertice + 19] = 1;
+
+		myFlat[vertice + 20] = i + 0.2f;
+		myFlat[vertice + 21] = 0.5*cos(water_speed*(time + (30 + i + 0.2f)));
+		myFlat[vertice + 22] = +2;
+		myFlat[vertice + 23] = 1;
+
+		myFlatColors[vertice + 20] = 0;
+		myFlatColors[vertice + 21] = 0;
+		myFlatColors[vertice + 22] = 1;
+		myFlatColors[vertice + 23] = 1;
+		vertice += 24;
+
+
+	}
+
+	spColored->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spColored->a("vertex"));
+	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myFlat); //Współrzędne wierzchołków bierz z tablicy birdVertices
+
+	glEnableVertexAttribArray(spColored->a("color"));
+	glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, false, 0, myFlatColors); //Współrzędne wierzchołków bierz z tablicy birdColors
+
+	glDrawArrays(GL_TRIANGLES, 0, 1440);
+
+	glDisableVertexAttribArray(spColored->a("vertex"));
+	glDisableVertexAttribArray(spColored->a("color"));
+
+
+};
 
 
 //Procedura rysująca zawartość sceny
-void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
+void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_angle) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 
 	glm::mat4 M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-	M = glm::rotate(M, angle_y, glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
-	M = glm::rotate(M, angle_x, glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront + cameraPos, cameraUp);
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
 
 
-	drawGround(P, V, M);
+	//drawGround(P, V, M);
+	glm::mat4 M2 = glm::mat4(1.0f);
+	M2 = glm::translate(M, glm::vec3(0.0f, -1.0f, -0.7f));
 	M = glm::mat4(1.0f);
+	M = glm::rotate(M2, bridge_angle *PI / 180.0f, glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+	M = glm::translate(M, glm::vec3(0.0f, -2.0f, 0.0f));
+
+
 	drawBridge(P, V, M);
 
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(0.0f, -1.51f, -2.0f));
+
+	drawWater(P, V, M, angle_x);
 	//kostka(P, V, M);
 
 	//MUR
@@ -989,13 +1155,33 @@ int main(void)
 	//Główna pętla
 	float angle_x = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
 	float angle_y = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
+	float bridge_angle = 180;
 	glfwSetTime(0); //Wyzeruj licznik czasu
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
+
+		if (getBridgeDown)
+		{
+			bridge_angle += bridgeSpeed * glfwGetTime();
+			if (bridge_angle <90)
+			{
+				bridge_angle = 90;
+			}
+		}
+		else
+		{
+			bridge_angle += bridgeSpeed * glfwGetTime();
+			if (bridge_angle >180)
+			{
+				bridge_angle = 180;
+			}
+		}
+
 		angle_x += speed_x * glfwGetTime(); //Oblicz kąt o jaki obiekt obrócił się podczas poprzedniej klatki
 		angle_y += speed_y * glfwGetTime(); //Oblicz kąt o jaki obiekt obrócił się podczas poprzedniej klatki
+		time += glfwGetTime();
 		glfwSetTime(0); //Wyzeruj licznik czasu
-		drawScene(window, angle_x, angle_y); //Wykonaj procedurę rysującą
+		drawScene(window, angle_x, angle_y,bridge_angle); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
 

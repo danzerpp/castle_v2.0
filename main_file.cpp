@@ -178,7 +178,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
 	tex = readTexture("whiteBricks.png");
-	bridgeTex = readTexture("Bricks.png");
+	bridgeTex = readTexture("bridgeTe.png");
 	glm::vec3 direction;
 
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -500,6 +500,7 @@ void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 	float myFlat[count];
 	int vertice = 0;
 	float myFlatColors[count];
+	float myFlatTexture[count/2];
 
 
 	for (float i = -30; i < 30; i=i+0.2f)

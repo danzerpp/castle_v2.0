@@ -5,7 +5,7 @@ int myCubeVertexCount=36;
 
 float myCubeVertices[]={
                 //ściana 1
-				5.0f, -5.0f, -5.0f, 5.0f,
+5.0f, -5.0f, -5.0f, 5.0f,
 -5.0f, 5.0f, -5.0f, 5.0f,
 -5.0f, -5.0f, -5.0f, 5.0f,
 

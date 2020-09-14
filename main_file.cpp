@@ -178,7 +178,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
 	tex = readTexture("whiteBricks.png");
-	bridgeTex = readTexture("bricks234.png");
+	bridgeTex = readTexture("Bricks.png");
 	glm::vec3 direction;
 
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -571,7 +571,6 @@ void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 	}
 
 	spColored->use(); //Aktywuj program cieniujący
-
 	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
 	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
 	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
@@ -611,12 +610,21 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::translate(M, glm::vec3(0.0f, -2.0f, 0.0f));
 
 
+	
 	drawBridge(P, V, M);
 
-	M = glm::mat4(1.0f);
-	M = glm::translate(M, glm::vec3(0.0f, -1.51f, -2.0f));
+	for (float i = -2; i < 47; i = i + 8)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(7.0f, -1.51f, i-1.0f));
+		M = glm::scale(M, glm::vec3(1.4f, 1.0f, 2.0f));
 
-	drawWater(P, V, M, angle_x);
+		drawWater(P, V, M, angle_x);
+	}
+
+
+
+
 	//kostka(P, V, M);
 
 	//MUR

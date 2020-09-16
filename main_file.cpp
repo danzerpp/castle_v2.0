@@ -32,12 +32,14 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
+#include "Square.h"
 
 float speed_x = 0.5f;//[radiany/s]
 float speed_y = 0;//[radiany/s]
 float water_speed = 1;
 GLuint tex;
 GLuint bridgeTex;
+GLuint sandTex;
 float yaw = 90;
 float pitch = 0;
 //Bridge
@@ -178,7 +180,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
 	tex = readTexture("whiteBricks.png");
-	bridgeTex = readTexture("bridgeTe.png");
+	bridgeTex = readTexture("bridgeTexture.png");
+	sandTex = readTexture("SandTexture.png");
 	glm::vec3 direction;
 
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -494,6 +497,32 @@ void texKostka2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	glDisableVertexAttribArray(spLambertTextured->a("color"));
 	glDisableVertexAttribArray(spLambertTextured->a("normal"));
 }
+
+void drawSand(glm::mat4 P, glm::mat4 V, glm::mat4 M)
+{
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, mySquareVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, mySquareTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, sandTex);
+	glUniform1i(spTextured->u("sandTex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, mySquareVertexCount);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("color"));
+}
+
 void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 
 	int const count = 7200;
@@ -614,15 +643,188 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	
 	drawBridge(P, V, M);
 
+
+	M = glm::mat4(1.0f);
+	M = glm::rotate(M2, 90 *PI / 180.0f, glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+	M = glm::scale(M, glm::vec3(1.0f, 0.5f, 1.0f));
+	M = glm::translate(M, glm::vec3(0.0f, -12.0f, 0.0f));
+
+	drawBridge(P, V, M);
+
 	for (float i = -2; i < 47; i = i + 8)
 	{
 		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(7.0f, -1.51f, i-1.0f));
+		M = glm::translate(M, glm::vec3(7.0f, -1.91f, i-1.0f));
 		M = glm::scale(M, glm::vec3(1.4f, 1.0f, 2.0f));
 
 		drawWater(P, V, M, angle_x);
 	}
 
+	//SAND
+	for (float i = -17; i < 18; i = i+2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 0.0f));
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 42.0f));
+		drawSand(P, V, M);
+	
+	}
+	for (float i = -31; i < 32; i = i + 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, -6.0f));
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 50.0f));
+		drawSand(P, V, M);
+	}
+
+	for (float i = -29; i < -21; i = i + 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 8.0f));
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 34.0f));
+		drawSand(P, V, M);
+	}
+
+	for (float i = 23; i < 31; i = i + 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 8.0f));
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 34.0f));
+		drawSand(P, V, M);
+	}
+	for (float i = -29; i < -17; i = i + 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, -4.0f));
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 46.0f));
+		drawSand(P, V, M);
+
+	/*	M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 50.0f));
+		drawSand(P, V, M);*/
+	}
+	for (float i = 19; i < 31; i = i + 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, -4.0f));
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::translate(M, glm::vec3(i, -2.0f, 46.0f));
+		drawSand(P, V, M);
+
+		/*	M = glm::mat4(1.0f);
+			M = glm::translate(M, glm::vec3(i, -2.0f, 50.0f));
+			drawSand(P, V, M);*/
+	}
+	for (float i = 5.3; i >-50; i = i - 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, 33.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, -31.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+	}
+	for (float i = 3.3; i > -3; i = i - 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, 19.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, -17.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+	}
+	for (float i = 3.3; i > -7; i = i - 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, 31.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, -29.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+	}
+	for (float i = -34.7; i > -46; i = i - 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, 31.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, -29.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+	}
+	for (float i = -38.7; i > -46; i = i - 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, 19.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, -17.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+	}
+
+	for (float i = -1.3; i > -42; i = i - 2)
+	{
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, 27.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+
+		M = glm::mat4(1.0f);
+		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		M = glm::translate(M, glm::vec3(i, -1.0f, -25.0f));
+		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+		drawSand(P, V, M);
+	}
+	//ENDSAND
+
+	/*M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(1.0f, -2.0f, 0.0f));
+	drawSand(P, V, M);
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-1.0f,-2.0f, 0.0f));
+	drawSand(P, V, M);*/
 
 
 

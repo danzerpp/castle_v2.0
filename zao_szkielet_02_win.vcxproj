@@ -29,6 +29,7 @@
     <ClInclude Include="s.h" />
     <ClInclude Include="shaderprogram.h" />
     <ClInclude Include="sphere.h" />
+    <ClInclude Include="Square.h" />
     <ClInclude Include="teapot.h" />
     <ClInclude Include="torus.h" />
   </ItemGroup>

@@ -43,6 +43,7 @@ GLuint tex;
 GLuint bridgeTex;
 GLuint sandTex;
 GLuint waterTex;
+GLuint groundTex;
 float yaw = 90;
 float pitch = 0;
 //Bridge
@@ -195,6 +196,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	bridgeTex = readTexture("bridgeTexture.png");
 	sandTex = readTexture("Grass.png");
 	waterTex = readTexture("waterTexture.png");
+	groundTex = readTexture("stone-wall.png");
 	glm::vec3 direction;
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
 
@@ -202,7 +204,6 @@ void initOpenGLProgram(GLFWwindow* window) {
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(direction);
-    loader.LoadFile("Tree.obj");
 
 }
 
@@ -276,7 +277,7 @@ void drawGround(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myGroundSquareTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, sandTex);
+	glBindTexture(GL_TEXTURE_2D, groundTex);
 	glUniform1i(spTextured->u("tex"), 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, myGroundSquareVertexCount);
@@ -681,10 +682,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
 
-
-
 	// Check to see if it loaded
-
 	// If so continue
 	
 	glm::mat4 M2 = glm::mat4(1.0f);

@@ -193,7 +193,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetKeyCallback(window, key_callback);
 	tex = readTexture("whiteBricks.png");
 	bridgeTex = readTexture("bridgeTexture.png");
-	sandTex = readTexture("stone-wall.png");
+	sandTex = readTexture("Grass.png");
 	waterTex = readTexture("waterTexture.png");
 	glm::vec3 direction;
 	glfwSetWindowSizeCallback(window, windowResizeCallback);

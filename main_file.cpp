@@ -44,6 +44,7 @@ GLuint bridgeTex;
 GLuint sandTex;
 GLuint waterTex;
 GLuint groundTex;
+GLuint castleGroundTex;
 float yaw = 90;
 float pitch = 0;
 //Bridge
@@ -197,6 +198,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	sandTex = readTexture("stone-wall.png");
 	waterTex = readTexture("waterTexture.png");
 	groundTex = readTexture("grass.png");
+	castleGroundTex = readTexture("cobblestone.png");
 	glm::vec3 direction;
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
 
@@ -398,6 +400,7 @@ void texKostka(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
 	};
 
+
 	spTextured->use(); //Aktywuj program cieniujący
 
 	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
@@ -421,7 +424,7 @@ void texKostka(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	glDisableVertexAttribArray(spTextured->a("color"));
 }
 
-void texKostka2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+void texCastleGround(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	//Tablica ta raczej powinna znaleźć się w pliku myCube.h, ale umieściłem ją tutaj, żeby w tej procedurze zawrzeć (prawie) całe rozwiązanie zadania
 	//Reszta to wczytanie tekstury - czyli kawałki kodu, które trzeba przekopiować ze slajdów
 	float myCubeTexCoords[] = {
@@ -444,52 +447,100 @@ void texKostka2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
 	};
 
-	float myCubeNormals[] = {
-		0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
-		0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
 
-		0,0, 1,0, 0,0, 1,0, 0,0, 1,0,
-		0,0, 1,0, 0,0, 1,0, 0,0, 1,0,
+	spTextured->use(); //Aktywuj program cieniujący
 
-		0,-1,0,0, 0,-1,0,0, 0,-1,0,0,
-		0,-1,0,0, 0,-1,0,0, 0,-1,0,0,
-
-		0, 1,0,0, 0, 1,0,0, 0, 1,0,0,
-		0, 1,0,0, 0, 1,0,0, 0, 1,0,0,
-
-		-1,0,0,0, -1,0,0,0, -1,0,0,0,
-		-1,0,0,0, -1,0,0,0, -1,0,0,0,
-
-		1,0,0,0, 1,0,0,0, 1,0,0,0,
-		1,0,0,0, 1,0,0,0, 1,0,0,0,
-	};
-
-	spLambertTextured->use(); //Aktywuj program cieniujący
-
-	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
-	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
-	glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
 
 
-	glEnableVertexAttribArray(spLambertTextured->a("vertex"));
-	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
 
-	glEnableVertexAttribArray(spLambertTextured->a("texCoord"));
-	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
-
-	glEnableVertexAttribArray(spLambertTextured->a("normal"));
-	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, myCubeNormals); //Wektory normalne bierz z tablicy myCubeNormals
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glUniform1i(spLambertTextured->u("tex"), 0);
+	glBindTexture(GL_TEXTURE_2D, castleGroundTex);
+	glUniform1i(spTextured->u("tex"), 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
 
-	glDisableVertexAttribArray(spLambertTextured->a("vertex"));
-	glDisableVertexAttribArray(spLambertTextured->a("color"));
-	glDisableVertexAttribArray(spLambertTextured->a("normal"));
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("color"));
 }
+
+
+//void texKostka2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+//	//Tablica ta raczej powinna znaleźć się w pliku myCube.h, ale umieściłem ją tutaj, żeby w tej procedurze zawrzeć (prawie) całe rozwiązanie zadania
+//	//Reszta to wczytanie tekstury - czyli kawałki kodu, które trzeba przekopiować ze slajdów
+//	float myCubeTexCoords[] = {
+//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+//
+//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+//
+//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+//
+//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+//
+//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+//
+//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+//	};
+
+	//float myCubeNormals[] = {
+	//	0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
+	//	0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
+
+	//	0,0, 1,0, 0,0, 1,0, 0,0, 1,0,
+	//	0,0, 1,0, 0,0, 1,0, 0,0, 1,0,
+
+	//	0,-1,0,0, 0,-1,0,0, 0,-1,0,0,
+	//	0,-1,0,0, 0,-1,0,0, 0,-1,0,0,
+
+	//	0, 1,0,0, 0, 1,0,0, 0, 1,0,0,
+	//	0, 1,0,0, 0, 1,0,0, 0, 1,0,0,
+
+	//	-1,0,0,0, -1,0,0,0, -1,0,0,0,
+	//	-1,0,0,0, -1,0,0,0, -1,0,0,0,
+
+	//	1,0,0,0, 1,0,0,0, 1,0,0,0,
+	//	1,0,0,0, 1,0,0,0, 1,0,0,0,
+	//};
+
+	//spLambertTextured->use(); //Aktywuj program cieniujący
+
+	//glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	//glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	//glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	//glEnableVertexAttribArray(spLambertTextured->a("vertex"));
+	//glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	//glEnableVertexAttribArray(spLambertTextured->a("texCoord"));
+	//glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	//glEnableVertexAttribArray(spLambertTextured->a("normal"));
+	//glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, myCubeNormals); //Wektory normalne bierz z tablicy myCubeNormals
+
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, tex);
+	//glUniform1i(spLambertTextured->u("tex"), 0);
+
+	//glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	//glDisableVertexAttribArray(spLambertTextured->a("vertex"));
+	//glDisableVertexAttribArray(spLambertTextured->a("color"));
+	//glDisableVertexAttribArray(spLambertTextured->a("normal"));
+//}
 
 void drawSand(glm::mat4 P, glm::mat4 V, glm::mat4 M)
 {
@@ -909,6 +960,29 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 
 
 	//kostka(P, V, M);
+
+	//Podłoga zamek
+	for (float i = -25; i < 26; i = i + 2)
+	{
+		for (float j = 40; j >= 4; j = j - 2)
+		{
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, -2.0f, j));
+			texCastleGround(P, V, M);
+
+		}
+	}
+	for (float i = -3; i < 3; i = i + 2)
+	{
+		for (float j = 4; j >= 0 ; j = j - 2)
+		{
+			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+			M = glm::translate(M, glm::vec3(i, -2.0f, j));
+			texCastleGround(P, V, M);
+
+		}
+	}
+
 
 	//MUR
 
@@ -1404,10 +1478,6 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 	M = glm::translate(M, glm::vec3(-1.0f, 4.0f, 4.0f));
 	texKostka(P, V, M);
-
-
-
-	//texKostka2(P, V, M);
 
 	glfwSwapBuffers(window); //Skopiuj bufor tylny do bufora przedniego
 }

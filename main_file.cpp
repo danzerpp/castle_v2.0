@@ -18,7 +18,6 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 */
 
 #define GLM_FORCE_RADIANS
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -27,6 +26,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <stdlib.h>
 #include <stdio.h>
 #include "myCube.h"
+#include <glad/glad.h>
 #include "Bridge.h"
 #include "constants.h"
 #include "allmodels.h"
@@ -35,6 +35,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "Square.h"
 #include "groundSquare.h"
 #include "Object_Loader.h"
+#include "LoadModel.h"
 
 float speed_x = 0.5f;//[radiany/s]
 float speed_y = 0;//[radiany/s]
@@ -59,6 +60,9 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float lastX = 400, lastY = 300;
+
+//Shader ourShader("shader.vs", "shader.fs");
+//Model ourModel("Tree.obj");
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	const float cameraSpeed = 0.25f; // adjust accordingly
@@ -208,6 +212,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(direction);
+
+	//loads model 
 
 }
 
@@ -864,14 +870,16 @@ void drawFlag(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_angle) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
-
 	glm::mat4 M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront + cameraPos, cameraUp);
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
 
-	// Check to see if it loaded
-	// If so continue
+
+	
+	
+
+
 	
 	glm::mat4 M2 = glm::mat4(1.0f);
 	M2 = glm::translate(M, glm::vec3(0.0f, -1.0f, -0.7f));
@@ -1960,6 +1968,9 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::translate(M, glm::vec3(-1.0f, 4.0f, 4.0f));
 	texKostka(P, V, M);
 
+
+	
+
 	glfwSwapBuffers(window); //Skopiuj bufor tylny do bufora przedniego
 }
 
@@ -1993,12 +2004,13 @@ int main(void)
 	}
 
 	initOpenGLProgram(window); //Operacje inicjujące
-
 	//Główna pętla
 	float angle_x = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
 	float angle_y = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
 	float bridge_angle = 180;
 	glfwSetTime(0); //Wyzeruj licznik czasu
+
+
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
 

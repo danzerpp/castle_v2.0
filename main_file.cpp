@@ -49,6 +49,7 @@ GLuint groundTex;
 GLuint castleGroundTex;
 GLuint FlagTex;
 GLuint FireTex;
+GLuint WallTex;
 float yaw = 90;
 float pitch = 0;
 //Bridge
@@ -206,6 +207,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	castleGroundTex = readTexture("cobblestone.png");
 	FlagTex = readTexture("flag.png");
 	FireTex = readTexture("flame.png");
+	WallTex = readTexture("wall.png");
 	glm::vec3 direction;
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
 
@@ -574,7 +576,54 @@ void drawSand(glm::mat4 P, glm::mat4 V, glm::mat4 M)
 	glDisableVertexAttribArray(spTextured->a("color"));
 }
 
-void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
+void texSciana(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+	//Tablica ta raczej powinna znaleźć się w pliku myCube.h, ale umieściłem ją tutaj, żeby w tej procedurze zawrzeć (prawie) całe rozwiązanie zadania
+	//Reszta to wczytanie tekstury - czyli kawałki kodu, które trzeba przekopiować ze slajdów
+	float myCubeTexCoords[] = {
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+	};
+
+
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, WallTex);
+	glUniform1i(spTextured->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("color"));
+}
+
+void drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 
 	int const count = 1440;
 	float myFlat[count];
@@ -879,70 +928,70 @@ void	drawFire(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 		// pierwszy trójkąt
 
 		myFlat[vertice] = 0 +((rand() % 100) / 50);
-		myFlat[vertice + 1] = 2 + ((rand()%100)/50);
+		myFlat[vertice + 1] = 2 + ((rand()%100)/30);
 		myFlat[vertice + 2] = 0 + ((rand() % 100) / 50);
 		myFlat[vertice + 3] = 1;
 
 		myFlat[vertice + 4] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 5] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 5] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 6] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 7] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 7] = 1;
 
 		myFlat[vertice + 8] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 9] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 9] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 10] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 11] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 11] = 1;
 
 		// drugi trójkąt
 
 		myFlat[vertice + 12] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 13] = 2 + ((rand() % 100) / 50);
+		myFlat[vertice + 13] = 2 + ((rand() % 100) / 30);
 		myFlat[vertice + 14] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 15] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 15] = 1;
 
 		myFlat[vertice + 16] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 17] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 17] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 18] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 19] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 19] = 1;
 
 		myFlat[vertice + 20] = 1 + ((rand() % 100) / 50);
 		myFlat[vertice + 21] = 1 + ((rand() % 100) / 50);
 		myFlat[vertice + 22] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 23] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 23] = 1;
 
 		// trzeci trójkąt
 
 		myFlat[vertice + 24] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 25] = 2 + ((rand() % 100) / 50);
+		myFlat[vertice + 25] = 2 + ((rand() % 100) / 30);
 		myFlat[vertice + 26] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 27] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 27] = 1;
 
 		myFlat[vertice + 28] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 29] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 29] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 30] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 31] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 31] = 1;
 
 		myFlat[vertice + 32] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 33] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 33] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 34] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 35] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 35] = 1;
 
 		// czwarty trójkąt
 
 		myFlat[vertice + 36] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 37] = 2 + ((rand() % 100) / 50);
+		myFlat[vertice + 37] = 2 + ((rand() % 100) / 30);
 		myFlat[vertice + 38] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 39] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 39] = 1;
 
 		myFlat[vertice + 40] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 41] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 41] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 42] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 43] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 43] = 1;
 
 		myFlat[vertice + 44] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 45] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 45] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 46] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 47] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 47] = 1;
 
 		myFlatTexture[texVertice] = 0;
 
@@ -1136,13 +1185,44 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 		drawFlag(P, V, M, angle_x);
 
 		//OGIEŃ
-		for (float i = 0; i < 10; i++)
+		for (float i = 0; i < 20; i++)
 		{
 			M = glm::mat4(1.0f);
-			M = glm::translate(M, glm::vec3(0, 0.15f, -5));
-			M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
+			M = glm::translate(M, glm::vec3(5, -0.9, 27));
+			M = glm::scale(M, glm::vec3(0.08f, 0.08f, 0.08f));
 			drawFire(P, V, M, angle_x);
 		}
+		//SCIANA ŚRODEK
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(1, 0, 33));
+		M = glm::scale(M, glm::vec3(7, 2, 0.5f));
+		texSciana(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(5.5, 0, 23));
+		M = glm::scale(M, glm::vec3(3.5, 2, 0.5f));
+		texSciana(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-3.5f, 0, 23));
+		M = glm::scale(M, glm::vec3(3.5, 2, 0.5f));
+		texSciana(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(8, 0, 28));
+		M = glm::scale(M, glm::vec3(0.5f, 2, 6));
+		texSciana(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(-6, 0, 28));
+		M = glm::scale(M, glm::vec3(0.5f, 2, 6));
+		texSciana(P, V, M);
+
+		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M = glm::translate(M, glm::vec3(1, 2, 28));
+		M = glm::scale(M, glm::vec3(7.9f, 0.5f, 6.1f));
+		texSciana(P, V, M);
 
 		
 

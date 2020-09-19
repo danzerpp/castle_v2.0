@@ -12,7 +12,7 @@ in vec3 FragPos;
 in vec4 ic;
 
 void main(void) {
-   float ambientStrength = 0.9;
+   float ambientStrength = 0.7;
     vec3 ambient = ambientStrength* texture(tex,i_tc).rgb ;
 
  vec3 norm = normalize(Normal);

@@ -269,7 +269,36 @@ void freeOpenGLProgram(GLFWwindow* window) {
 //	//glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
 //	//Models::torus.drawSolid(); //Narysuj obiekt
 //
+
 //}
+
+void drawGroundInRoom(glm::mat4 P, glm::mat4 V, glm::mat4 M)
+{
+	//Przykładowe tablice dla tego zadania - możliwości jest bardzo dużo
+
+	spColored->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spColored->a("vertex"));
+	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myGroundSquareVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	glEnableVertexAttribArray(spColored->a("texCoord"));
+	glVertexAttribPointer(spColored->a("texCoord"), 2, GL_FLOAT, false, 0, myGroundSquareTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, castleGroundTex);
+	glUniform1i(spColored->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, myGroundSquareVertexCount);
+
+	glDisableVertexAttribArray(spColored->a("vertex"));
+	glDisableVertexAttribArray(spColored->a("color"));
+};
+
 
 void drawGround(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	//Przykładowe tablice dla tego zadania - możliwości jest bardzo dużo
@@ -600,27 +629,27 @@ void texSciana(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	};
 
 
-	spTextured->use(); //Aktywuj program cieniujący
+	spColored->use(); //Aktywuj program cieniujący
 
-	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
-	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
-	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
 
 
-	glEnableVertexAttribArray(spTextured->a("vertex"));
-	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+	glEnableVertexAttribArray(spColored->a("vertex"));
+	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
 
-	glEnableVertexAttribArray(spTextured->a("texCoord"));
-	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+	glEnableVertexAttribArray(spColored->a("texCoord"));
+	glVertexAttribPointer(spColored->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, WallTex);
-	glUniform1i(spTextured->u("tex"), 0);
+	glUniform1i(spColored->u("tex"), 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
 
-	glDisableVertexAttribArray(spTextured->a("vertex"));
-	glDisableVertexAttribArray(spTextured->a("color"));
+	glDisableVertexAttribArray(spColored->a("vertex"));
+	glDisableVertexAttribArray(spColored->a("color"));
 }
 
 void drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
@@ -1224,6 +1253,21 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::translate(M, glm::vec3(1, 2, 28));
 	M = glm::scale(M, glm::vec3(7.9f, 0.5f, 6.1f));
 	texSciana(P, V, M);
+	for (float i = -5; i < 8; i = i + 2)
+	{
+
+		for (float j = 24.5; j < 34; j = j + 2)
+		{
+				M = glm::mat4(1.0f);
+				M = glm::translate(M, glm::vec3(i, -1.99f, j));
+				drawGroundInRoom(P, V, M);
+			
+		
+
+		}
+
+
+	}
 	//tutaj skończ
 
 
@@ -2214,7 +2258,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 	M = glm::translate(M, glm::vec3(1.0f, 4.0f, 4.0f));
 	texKostka(P, V, M);
-	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkowąpa
 	M = glm::translate(M, glm::vec3(-1.0f, 4.0f, 4.0f));
 	texKostka(P, V, M);
 

@@ -57,7 +57,9 @@ float aspectRatio = 1;
 objl::Loader loader;
 float angle_bridge = 0;
 bool getBridgeDown = false;
+bool getDoorOpen = false;
 float bridgeSpeed = 0;
+float doorSpeed = 0;
 float time = 0;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -152,7 +154,20 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 		}
 	}
+		if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+		{
+			if (getDoorOpen)
+			{
+				getDoorOpen = false;
+				doorSpeed = 30;
+			}
+			else
+			{
+				getDoorOpen = true;
+				doorSpeed = -30;
 
+			}
+		}
 }
 
 
@@ -1131,7 +1146,7 @@ void	drawFire(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 };
 
 //Procedura rysująca zawartość sceny
-void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_angle) {
+void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_angle, float door_angle) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 
@@ -1160,6 +1175,67 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::translate(M, glm::vec3(0.0f, -8.7f, 0.0f));
 
 	drawBridge(P, V, M);
+	
+
+
+	// rysuj drzwi
+	M2 = glm::mat4(1.0f);
+	M2 = glm::translate(M2, glm::vec3(2.0f, 0.0f, 23.5f));
+
+	M = glm::mat4(1.0f);
+	M = glm::rotate(M2, door_angle * PI / 180.0f, glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+	M = glm::scale(M, glm::vec3(0.5f, 0.7f, 1.0f));
+	M = glm::translate(M, glm::vec3(2.0f, 0.0f, 0.0f));
+
+	float myCubeTexCoords[] = {
+			1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+			1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+			1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+			1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+			1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+			1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+			1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+			1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+			1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+			1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+			1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+			1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+	};
+
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myBridgeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, bridgeTex);
+	glUniform1i(spTextured->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("color"));
+
+
+
+
+
+
+
+
 
 	for (float i = -2; i < 51; i = i + 8)
 	{
@@ -1253,7 +1329,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::translate(M, glm::vec3(1, 2, 28));
 	M = glm::scale(M, glm::vec3(7.9f, 0.5f, 6.1f));
 	texSciana(P, V, M);
-	for (float i = -5; i < 8; i = i + 2)
+	for (float i = -5; i < 9; i = i + 2)
 	{
 
 		for (float j = 24.5; j < 34; j = j + 2)
@@ -2300,9 +2376,28 @@ int main(void)
 	float angle_x = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
 	float angle_y = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
 	float bridge_angle = 180;
+	float door_angle = 180;
 	glfwSetTime(0); //Wyzeruj licznik czasu
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
+
+		if (getDoorOpen)
+		{
+			door_angle += doorSpeed * glfwGetTime();
+			if (door_angle < 90)
+			{
+				door_angle = 90;
+			}
+		}
+		else
+		{
+			door_angle += doorSpeed * glfwGetTime();
+			if (door_angle > 180)
+			{
+				door_angle = 180;
+			}
+		}
+
 
 		if (getBridgeDown)
 		{
@@ -2325,7 +2420,7 @@ int main(void)
 		angle_y += speed_y * glfwGetTime(); //Oblicz kąt o jaki obiekt obrócił się podczas poprzedniej klatki
 		time += glfwGetTime();
 		glfwSetTime(0); //Wyzeruj licznik czasu
-		drawScene(window, angle_x, angle_y, bridge_angle); //Wykonaj procedurę rysującą
+		drawScene(window, angle_x, angle_y, bridge_angle,door_angle); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
 

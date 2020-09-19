@@ -1192,8 +1192,9 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 		M = glm::scale(M, glm::vec3(0.08f, 0.08f, 0.08f));
 		drawFire(P, V, M, angle_x);
 	}
-	//SCIANA ŚRODEK
+	//BUDYNEK ŚRODEK
 
+	//Tutaj zacznij oświetlać dupa
 	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 	M = glm::translate(M, glm::vec3(1, 0, 33));
 	M = glm::scale(M, glm::vec3(7, 2, 0.5f));
@@ -1223,7 +1224,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::translate(M, glm::vec3(1, 2, 28));
 	M = glm::scale(M, glm::vec3(7.9f, 0.5f, 6.1f));
 	texSciana(P, V, M);
-
+	//tutaj skończ
 
 
 

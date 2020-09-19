@@ -49,6 +49,7 @@ GLuint groundTex;
 GLuint castleGroundTex;
 GLuint FlagTex;
 GLuint FireTex;
+GLuint WallTex;
 float yaw = 90;
 float pitch = 0;
 //Bridge
@@ -57,7 +58,7 @@ objl::Loader loader;
 float angle_bridge = 0;
 bool getBridgeDown = false;
 float bridgeSpeed = 0;
-float time =0;
+float time = 0;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -206,6 +207,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	castleGroundTex = readTexture("cobblestone.png");
 	FlagTex = readTexture("flag.png");
 	FireTex = readTexture("flame.png");
+	WallTex = readTexture("wall.png");
 	glm::vec3 direction;
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
 
@@ -273,7 +275,7 @@ void drawGround(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	//Przykładowe tablice dla tego zadania - możliwości jest bardzo dużo
 
 	spTextured->use(); //Aktywuj program cieniujący
-	
+
 	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
 	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
 	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
@@ -319,7 +321,7 @@ void kostka(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	glDisableVertexAttribArray(spColored->a("color"));
 }
 
-void drawBridge(glm::mat4 P, glm::mat4 V, glm::mat4 M) 
+void drawBridge(glm::mat4 P, glm::mat4 V, glm::mat4 M)
 {
 	//spColored->use(); //Aktywuj program cieniujący
 	//glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
@@ -574,32 +576,79 @@ void drawSand(glm::mat4 P, glm::mat4 V, glm::mat4 M)
 	glDisableVertexAttribArray(spTextured->a("color"));
 }
 
-void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
+void texSciana(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+	//Tablica ta raczej powinna znaleźć się w pliku myCube.h, ale umieściłem ją tutaj, żeby w tej procedurze zawrzeć (prawie) całe rozwiązanie zadania
+	//Reszta to wczytanie tekstury - czyli kawałki kodu, które trzeba przekopiować ze slajdów
+	float myCubeTexCoords[] = {
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+	};
+
+
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, WallTex);
+	glUniform1i(spTextured->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("color"));
+}
+
+void drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 
 	int const count = 1440;
 	float myFlat[count];
 	int vertice = 0;
 	float myFlatColors[count];
-	float myFlatTexture[count/2];
+	float myFlatTexture[count / 2];
 	int texVertice = 0;
 
-	for (float i = -30; i < 30; i=i+1.0f)
+	for (float i = -30; i < 30; i = i + 1.0f)
 	{
 		// pierwszy trójkąt
 
 
 		myFlat[vertice] = i + 1.0f;
-		myFlat[vertice + 1] = 0.5*cos(water_speed*(time + (30 + i + 1.0f)));
+		myFlat[vertice + 1] = 0.5 * cos(water_speed * (time + (30 + i + 1.0f)));
 		myFlat[vertice + 2] = -2;
 		myFlat[vertice + 3] = 1;
 
-		myFlat[vertice +4] = i;
-		myFlat[vertice + 5] = 0.5*cos(water_speed*(time + (30 + i)));
+		myFlat[vertice + 4] = i;
+		myFlat[vertice + 5] = 0.5 * cos(water_speed * (time + (30 + i)));
 		myFlat[vertice + 6] = 2;
 		myFlat[vertice + 7] = 1;
 
 		myFlat[vertice + 8] = i;
-		myFlat[vertice + 9] = 0.5*cos(water_speed*(time + (30 + i)));
+		myFlat[vertice + 9] = 0.5 * cos(water_speed * (time + (30 + i)));
 		myFlat[vertice + 10] = -2;
 		myFlat[vertice + 11] = 1;
 
@@ -607,21 +656,21 @@ void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 
 
 		myFlat[vertice + 12] = i + 1.0f;
-		myFlat[vertice + 13] = 0.5*cos(water_speed*(time + (30 + i + 1.0f)));
+		myFlat[vertice + 13] = 0.5 * cos(water_speed * (time + (30 + i + 1.0f)));
 		myFlat[vertice + 14] = -2;
 		myFlat[vertice + 15] = 1;
 
 		myFlat[vertice + 16] = i + 1.0f;
-		myFlat[vertice + 17] = 0.5*cos(water_speed*(time + (30 + i + 1.0f)));;
+		myFlat[vertice + 17] = 0.5 * cos(water_speed * (time + (30 + i + 1.0f)));;
 		myFlat[vertice + 18] = 2;
 		myFlat[vertice + 19] = 1;
 
 
 		myFlat[vertice + 20] = i;
-		myFlat[vertice + 21] = 0.5*cos(water_speed*(time + (30 + i)));
+		myFlat[vertice + 21] = 0.5 * cos(water_speed * (time + (30 + i)));
 		myFlat[vertice + 22] = 2;
 		myFlat[vertice + 23] = 1;
-		
+
 
 		myFlatTexture[texVertice] = 0;
 
@@ -632,26 +681,26 @@ void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 		myFlatColors[vertice + 3] = 1;
 
 
-		myFlatColors[vertice +4] = 0;
+		myFlatColors[vertice + 4] = 0;
 		myFlatColors[vertice + 5] = 0;
 		myFlatColors[vertice + 6] = 1;
 		myFlatColors[vertice + 7] = 1;
 
-		
+
 
 		myFlatColors[vertice + 8] = 0;
 		myFlatColors[vertice + 9] = 0;
 		myFlatColors[vertice + 10] = 1;
 		myFlatColors[vertice + 11] = 1;
 
-	
+
 
 		myFlatColors[vertice + 12] = 0;
 		myFlatColors[vertice + 13] = 0;
 		myFlatColors[vertice + 14] = 1;
 		myFlatColors[vertice + 15] = 1;
 
-		
+
 
 		myFlatColors[vertice + 16] = 0;
 		myFlatColors[vertice + 17] = 0;
@@ -668,19 +717,19 @@ void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 		myFlatTexture[texVertice] = 1.0f;
 		myFlatTexture[texVertice + 1] = 0.0f;
 
-		myFlatTexture[texVertice +2] = 0.0f;
+		myFlatTexture[texVertice + 2] = 0.0f;
 		myFlatTexture[texVertice + 3] = 1.0f;
 
-		myFlatTexture[texVertice +4] = 0.0f;
+		myFlatTexture[texVertice + 4] = 0.0f;
 		myFlatTexture[texVertice + 5] = 0.0f;
 
-		myFlatTexture[texVertice +6] = 1.0f;
-		myFlatTexture[texVertice +7] = 0.0f;
+		myFlatTexture[texVertice + 6] = 1.0f;
+		myFlatTexture[texVertice + 7] = 0.0f;
 
-		myFlatTexture[texVertice+8] = 1.0f;
+		myFlatTexture[texVertice + 8] = 1.0f;
 		myFlatTexture[texVertice + 9] = 1.0f;
 
-		myFlatTexture[texVertice +10] = 0.0f;
+		myFlatTexture[texVertice + 10] = 0.0f;
 		myFlatTexture[texVertice + 11] = 1.0f;
 
 		texVertice += 12;
@@ -709,22 +758,22 @@ void	drawWater(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 	glDisableVertexAttribArray(spTextured->a("vertex"));
 	glDisableVertexAttribArray(spTextured->a("color"));
 
-//	spColored->use(); //Aktywuj program cieniujący
-//	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
-//	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
-//	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
-//
-//
-//	glEnableVertexAttribArray(spColored->a("vertex"));
-//	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myFlat); //Współrzędne wierzchołków bierz z tablicy birdVertices
-//
-//a	glEnableVertexAttribArray(spColored->a("color"));
-//	glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, false, 0, myFlatColors); //Współrzędne wierzchołków bierz z tablicy birdColors
-//
-//	glDrawArrays(GL_TRIANGLES, 0, 1440);
-//
-//	glDisableVertexAttribArray(spColored->a("vertex"));
-//	glDisableVertexAttribArray(spColored->a("color"));
+	//	spColored->use(); //Aktywuj program cieniujący
+	//	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	//	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	//	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+	//
+	//
+	//	glEnableVertexAttribArray(spColored->a("vertex"));
+	//	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myFlat); //Współrzędne wierzchołków bierz z tablicy birdVertices
+	//
+	//a	glEnableVertexAttribArray(spColored->a("color"));
+	//	glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, false, 0, myFlatColors); //Współrzędne wierzchołków bierz z tablicy birdColors
+	//
+	//	glDrawArrays(GL_TRIANGLES, 0, 1440);
+	//
+	//	glDisableVertexAttribArray(spColored->a("vertex"));
+	//	glDisableVertexAttribArray(spColored->a("color"));
 
 
 };
@@ -741,8 +790,8 @@ void drawFlag(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 	for (float i = 0; i < 1; i = i + 1.0f)
 	{
 		// pierwszy trójkąt
-			
-		
+
+
 		myFlat[vertice] = -3.0f;
 		myFlat[vertice + 1] = 2;
 		myFlat[vertice + 2] = 0.9 * cos(water_speed * (time + (30 + i + 1.0f)));
@@ -754,7 +803,7 @@ void drawFlag(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 		myFlat[vertice + 7] = 1;
 
 		myFlat[vertice + 8] = 3.0f;
-		myFlat[vertice + 9] =  2;
+		myFlat[vertice + 9] = 2;
 		myFlat[vertice + 10] = 0.9; //* cos(water_speed * (time + (30 + i)));
 		myFlat[vertice + 11] = 1;
 
@@ -763,12 +812,12 @@ void drawFlag(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 
 		myFlat[vertice + 12] = -3.0f;
 		myFlat[vertice + 13] = 2;
-		myFlat[vertice + 14] = 0.9* cos(water_speed * (time + (30 + i + 1.0f)));
+		myFlat[vertice + 14] = 0.9 * cos(water_speed * (time + (30 + i + 1.0f)));
 		myFlat[vertice + 15] = 1;
 
 		myFlat[vertice + 16] = -3.0f;
 		myFlat[vertice + 17] = -2;
-		myFlat[vertice + 18] = 0.9* cos(water_speed * (time + (30 + i + 1.0f)));
+		myFlat[vertice + 18] = 0.9 * cos(water_speed * (time + (30 + i + 1.0f)));
 		myFlat[vertice + 19] = 1;
 
 
@@ -878,71 +927,71 @@ void	drawFire(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 	{
 		// pierwszy trójkąt
 
-		myFlat[vertice] = 0 +((rand() % 100) / 50);
-		myFlat[vertice + 1] = 2 + ((rand()%100)/50);
+		myFlat[vertice] = 0 + ((rand() % 100) / 50);
+		myFlat[vertice + 1] = 2 + ((rand() % 100) / 30);
 		myFlat[vertice + 2] = 0 + ((rand() % 100) / 50);
 		myFlat[vertice + 3] = 1;
 
 		myFlat[vertice + 4] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 5] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 5] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 6] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 7] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 7] = 1;
 
 		myFlat[vertice + 8] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 9] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 9] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 10] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 11] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 11] = 1;
 
 		// drugi trójkąt
 
 		myFlat[vertice + 12] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 13] = 2 + ((rand() % 100) / 50);
+		myFlat[vertice + 13] = 2 + ((rand() % 100) / 30);
 		myFlat[vertice + 14] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 15] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 15] = 1;
 
 		myFlat[vertice + 16] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 17] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 17] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 18] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 19] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 19] = 1;
 
 		myFlat[vertice + 20] = 1 + ((rand() % 100) / 50);
 		myFlat[vertice + 21] = 1 + ((rand() % 100) / 50);
 		myFlat[vertice + 22] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 23] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 23] = 1;
 
 		// trzeci trójkąt
 
 		myFlat[vertice + 24] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 25] = 2 + ((rand() % 100) / 50);
+		myFlat[vertice + 25] = 2 + ((rand() % 100) / 30);
 		myFlat[vertice + 26] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 27] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 27] = 1;
 
 		myFlat[vertice + 28] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 29] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 29] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 30] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 31] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 31] = 1;
 
 		myFlat[vertice + 32] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 33] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 33] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 34] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 35] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 35] = 1;
 
 		// czwarty trójkąt
 
 		myFlat[vertice + 36] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 37] = 2 + ((rand() % 100) / 50);
+		myFlat[vertice + 37] = 2 + ((rand() % 100) / 30);
 		myFlat[vertice + 38] = 0 + ((rand() % 100) / 50);
-		myFlat[vertice + 39] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 39] = 1;
 
 		myFlat[vertice + 40] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 41] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 41] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 42] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 43] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 43] = 1;
 
 		myFlat[vertice + 44] = -1 + ((rand() % 100) / 50);
-		myFlat[vertice + 45] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 45] = 1 + ((rand() % 100) / 30);
 		myFlat[vertice + 46] = 1 + ((rand() % 100) / 50);
-		myFlat[vertice + 47] = 1 + ((rand() % 100) / 50);
+		myFlat[vertice + 47] = 1;
 
 		myFlatTexture[texVertice] = 0;
 
@@ -1050,7 +1099,7 @@ void	drawFire(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 	glDisableVertexAttribArray(spTextured->a("vertex"));
 	glDisableVertexAttribArray(spTextured->a("color"));
 
-}; 
+};
 
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_angle) {
@@ -1064,95 +1113,126 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 
 	// Check to see if it loaded
 	// If so continue
-	
+
 	glm::mat4 M2 = glm::mat4(1.0f);
 	M2 = glm::translate(M, glm::vec3(0.0f, -1.0f, -0.7f));
 	M = glm::mat4(1.0f);
-	M = glm::rotate(M2, bridge_angle *PI / 180.0f, glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+	M = glm::rotate(M2, bridge_angle * PI / 180.0f, glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 	M = glm::translate(M, glm::vec3(0.0f, -2.0f, 0.0f));
 
 
-	
+
 	drawBridge(P, V, M);
 
 
 	M = glm::mat4(1.0f);
-	M = glm::rotate(M2, 90 *PI / 180.0f, glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+	M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 	M = glm::scale(M, glm::vec3(1.0f, 0.59f, 1.0f));
 	M = glm::translate(M, glm::vec3(0.0f, -8.7f, 0.0f));
 
 	drawBridge(P, V, M);
 
-	for (float i = -2; i <51; i = i + 8)
+	for (float i = -2; i < 51; i = i + 8)
 	{
 		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(7.0f, -1.91f, i-1.0f));
+		M = glm::translate(M, glm::vec3(7.0f, -1.91f, i - 1.0f));
 		M = glm::scale(M, glm::vec3(1.4f, 1.0f, 2.0f));
 
 		drawWater(P, V, M, angle_x);
 	}
 
-	
+
 	//FLAGI
 
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(17.5, 15.5, -4));
+	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(17.5, 15.5, 6));
+	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(27.5, 15.5, -4));
+	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(27.5, 15.5, 6));
+	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-20.5, 15.5, -4));
+	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-20.5, 15.5, 6));
+	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-30.5, 15.5, -4));
+	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-30.5, 15.5, 6));
+	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	drawFlag(P, V, M, angle_x);
+
+	//OGIEŃ
+	for (float i = 0; i < 20; i++)
+	{
 		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(17.5, 15.5, -4));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
-		drawFlag(P, V, M, angle_x);
+		M = glm::translate(M, glm::vec3(5, -0.9, 27));
+		M = glm::scale(M, glm::vec3(0.08f, 0.08f, 0.08f));
+		drawFire(P, V, M, angle_x);
+	}
+	//SCIANA ŚRODEK
 
-		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(17.5, 15.5, 6));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
-		drawFlag(P, V, M, angle_x);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(1, 0, 33));
+	M = glm::scale(M, glm::vec3(7, 2, 0.5f));
+	texSciana(P, V, M);
 
-		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(27.5, 15.5, -4));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
-		drawFlag(P, V, M, angle_x);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(5.5, 0, 23));
+	M = glm::scale(M, glm::vec3(3.5, 2, 0.5f));
+	texSciana(P, V, M);
 
-		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(27.5, 15.5, 6));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
-		drawFlag(P, V, M, angle_x);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-3.5f, 0, 23));
+	M = glm::scale(M, glm::vec3(3.5, 2, 0.5f));
+	texSciana(P, V, M);
 
-		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(-20.5, 15.5, -4));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
-		drawFlag(P, V, M, angle_x);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(8, 0, 28));
+	M = glm::scale(M, glm::vec3(0.5f, 2, 6));
+	texSciana(P, V, M);
 
-		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(-20.5, 15.5, 6));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
-		drawFlag(P, V, M, angle_x);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-6, 0, 28));
+	M = glm::scale(M, glm::vec3(0.5f, 2, 6));
+	texSciana(P, V, M);
 
-		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(-30.5, 15.5, -4));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
-		drawFlag(P, V, M, angle_x);
-
-		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(-30.5, 15.5, 6));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
-		drawFlag(P, V, M, angle_x);
-
-		//OGIEŃ
-		for (float i = 0; i < 10; i++)
-		{
-			M = glm::mat4(1.0f);
-			M = glm::translate(M, glm::vec3(0, 0.15f, -5));
-			M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
-			drawFire(P, V, M, angle_x);
-		}
-
-		
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(1, 2, 28));
+	M = glm::scale(M, glm::vec3(7.9f, 0.5f, 6.1f));
+	texSciana(P, V, M);
 
 
-	for (float i = -61; i < 60; i =i+2)
+
+
+	for (float i = -61; i < 60; i = i + 2)
 	{
 
-		for (float j = -62; j < 60; j = j+2)
+		for (float j = -62; j < 60; j = j + 2)
 		{
-			if ((i <-32 || i >31))
+			if ((i < -32 || i >31))
 			{
 				M = glm::mat4(1.0f);
 				M = glm::translate(M, glm::vec3(i, -2.0f, j));
@@ -1167,15 +1247,15 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 					drawGround(P, V, M);
 				}
 			}
-			
+
 		}
-		
+
 
 	}
 
 
 	//SAND
-	for (float i = -17; i < 18; i = i+2)
+	for (float i = -17; i < 18; i = i + 2)
 	{
 		M = glm::mat4(1.0f);
 		M = glm::translate(M, glm::vec3(i, -2.0f, 0.0f));
@@ -1184,7 +1264,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 		M = glm::mat4(1.0f);
 		M = glm::translate(M, glm::vec3(i, -2.0f, 42.0f));
 		drawSand(P, V, M);
-	
+
 	}
 	for (float i = -31; i < 32; i = i + 2)
 	{
@@ -1228,9 +1308,9 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 		M = glm::translate(M, glm::vec3(i, -2.0f, 46.0f));
 		drawSand(P, V, M);
 
-	/*	M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(i, -2.0f, 50.0f));
-		drawSand(P, V, M);*/
+		/*	M = glm::mat4(1.0f);
+			M = glm::translate(M, glm::vec3(i, -2.0f, 50.0f));
+			drawSand(P, V, M);*/
 	}
 	for (float i = 19; i < 31; i = i + 2)
 	{
@@ -1246,7 +1326,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 			M = glm::translate(M, glm::vec3(i, -2.0f, 50.0f));
 			drawSand(P, V, M);*/
 	}
-	for (float i = 5.3; i >-50; i = i - 2)
+	for (float i = 5.3; i > -50; i = i - 2)
 	{
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
@@ -1357,7 +1437,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	}
 	for (float i = -3; i < 3; i = i + 2)
 	{
-		for (float j = 4; j >= 0 ; j = j - 2)
+		for (float j = 4; j >= 0; j = j - 2)
 		{
 			M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 			M = glm::translate(M, glm::vec3(i, -2.0f, j));
@@ -1860,7 +1940,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 		M = glm::translate(M, glm::vec3(19, i, 34));
 		texKostka(P, V, M);
-		
+
 	}
 
 	//Zdobienia Muru
@@ -1882,7 +1962,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	{
 		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 		M = glm::translate(M, glm::vec3(25, 6.0f, i));
-			texKostka(P, V, M);
+		texKostka(P, V, M);
 
 		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 		M = glm::translate(M, glm::vec3(-25, 6.0f, i));
@@ -1898,204 +1978,204 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	//Zdobienia Wież
 
 		//WIEŻA LEWY PRZÓD
-	
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(19, 12.0f, -4));
-		texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(19, 12.0f, 0));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(19, 12.0f, -4));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(19, 12.0f, 2));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(19, 12.0f, 0));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(19, 12.0f, 6));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(19, 12.0f, 2));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(29, 12.0f, -4));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(19, 12.0f, 6));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(29, 12.0f, 0));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(29, 12.0f, -4));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(29, 12.0f, 2));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(29, 12.0f, 0));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(29, 12.0f, 6));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(29, 12.0f, 2));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(25, 12.0f, -4));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(29, 12.0f, 6));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(23, 12.0f, -4));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(25, 12.0f, -4));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(25, 12.0f, 6));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(23, 12.0f, -4));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(23, 12.0f, 6));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(25, 12.0f, 6));
+	texKostka(P, V, M);
 
-		//WIEŻA PRAWY PRZÓD
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(23, 12.0f, 6));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-19, 12.0f, -4));
-		texKostka(P, V, M);
+	//WIEŻA PRAWY PRZÓD
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-19, 12.0f, 0));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-19, 12.0f, -4));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-19, 12.0f, 2));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-19, 12.0f, 0));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-19, 12.0f, 6));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-19, 12.0f, 2));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-29, 12.0f, -4));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-19, 12.0f, 6));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-29, 12.0f, 0));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-29, 12.0f, -4));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-29, 12.0f, 2));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-29, 12.0f, 0));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-29, 12.0f, 6));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-29, 12.0f, 2));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-25, 12.0f, -4));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-29, 12.0f, 6));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-23, 12.0f, -4));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-25, 12.0f, -4));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-25, 12.0f, 6));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-23, 12.0f, -4));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-23, 12.0f, 6));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-25, 12.0f, 6));
+	texKostka(P, V, M);
 
-		//WIEŻA PRAWY TYŁ
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-23, 12.0f, 6));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-19, 12.0f, 44));
-		texKostka(P, V, M);
+	//WIEŻA PRAWY TYŁ
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-23, 12.0f, 44));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-19, 12.0f, 44));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-25, 12.0f, 44));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-23, 12.0f, 44));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-29, 12.0f, 44));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-25, 12.0f, 44));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-23, 12.0f, 34));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-29, 12.0f, 44));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-25, 12.0f, 34));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-23, 12.0f, 34));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-29, 12.0f, 40));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-25, 12.0f, 34));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-29, 12.0f, 38));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-29, 12.0f, 40));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-29, 12.0f, 34));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-29, 12.0f, 38));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-19, 12.0f, 40));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-29, 12.0f, 34));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-19, 12.0f, 38));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-19, 12.0f, 40));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(-19, 12.0f, 34));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-19, 12.0f, 38));
+	texKostka(P, V, M);
 
-		//WIEŻA LEWY TYŁ
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-19, 12.0f, 34));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(19, 12.0f, 44));
-		texKostka(P, V, M);
+	//WIEŻA LEWY TYŁ
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(19, 12.0f, 40));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(19, 12.0f, 44));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(19, 12.0f, 38));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(19, 12.0f, 40));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(19, 12.0f, 34));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(19, 12.0f, 38));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(29, 12.0f, 44));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(19, 12.0f, 34));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(29, 12.0f, 40));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(29, 12.0f, 44));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(29, 12.0f, 38));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(29, 12.0f, 40));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(29, 12.0f, 34));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(29, 12.0f, 38));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(25, 12.0f, 44));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(29, 12.0f, 34));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(23, 12.0f, 44));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(25, 12.0f, 44));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(25, 12.0f, 34));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(23, 12.0f, 44));
+	texKostka(P, V, M);
 
-		M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M = glm::translate(M, glm::vec3(23, 12.0f, 34));
-		texKostka(P, V, M);
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(25, 12.0f, 34));
+	texKostka(P, V, M);
+
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(23, 12.0f, 34));
+	texKostka(P, V, M);
 
 	//for (float i = -26; i < 27; i= i+4)
 	//{
@@ -2182,7 +2262,7 @@ int main(void)
 		if (getBridgeDown)
 		{
 			bridge_angle += bridgeSpeed * glfwGetTime();
-			if (bridge_angle <90)
+			if (bridge_angle < 90)
 			{
 				bridge_angle = 90;
 			}
@@ -2190,7 +2270,7 @@ int main(void)
 		else
 		{
 			bridge_angle += bridgeSpeed * glfwGetTime();
-			if (bridge_angle >180)
+			if (bridge_angle > 180)
 			{
 				bridge_angle = 180;
 			}
@@ -2200,7 +2280,7 @@ int main(void)
 		angle_y += speed_y * glfwGetTime(); //Oblicz kąt o jaki obiekt obrócił się podczas poprzedniej klatki
 		time += glfwGetTime();
 		glfwSetTime(0); //Wyzeruj licznik czasu
-		drawScene(window, angle_x, angle_y,bridge_angle); //Wykonaj procedurę rysującą
+		drawScene(window, angle_x, angle_y, bridge_angle); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
 

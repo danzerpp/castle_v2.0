@@ -1206,7 +1206,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 
 	// rysuj drzwi
 	M2 = glm::mat4(1.0f);
-	M2 = glm::translate(M2, glm::vec3(2.0f, 0.0f, 23.5f));
+	M2 = glm::translate(M2, glm::vec3(1.99f, 0.0f, 23.5f));
 
 	M = glm::mat4(1.0f);
 	M = glm::rotate(M2, door_angle * PI / 180.0f, glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
@@ -1532,11 +1532,11 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	for (float i = -17; i < 18; i = i + 2)
 	{
 		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(i, -2.0f, 0.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, -0.01f));
 		drawSand(P, V, M);
 
 		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(i, -2.0f, 42.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, 42.01f));
 		drawSand(P, V, M);
 
 	}
@@ -1600,88 +1600,89 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 			M = glm::translate(M, glm::vec3(i, -2.0f, 50.0f));
 			drawSand(P, V, M);*/
 	}
-	for (float i = 5.3; i > -50; i = i - 2)
+	//tu wróć
+	for (float i = 31.3; i > -30; i = i - 2)
 	{
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, 33.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, 31.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, -31.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, -33.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 	}
-	for (float i = 3.3; i > -3; i = i - 2)
+	for (float i = 27.5; i > 21; i = i - 2)
 	{
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, 19.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, 17.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, -17.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, -19.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 	}
-	for (float i = 3.3; i > -7; i = i - 2)
+	for (float i = 27.5; i > 17; i = i - 2)
 	{
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, 31.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, 29.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, -29.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, -31.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 	}
-	for (float i = -34.7; i > -46; i = i - 2)
+	for (float i = 17.7; i > -14; i = i - 2)
 	{
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, 31.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, 25.01f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, -29.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, -27.01f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 	}
-	for (float i = -38.7; i > -46; i = i - 2)
+	for (float i = -18.5; i > -22; i = i - 2)
 	{
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, 19.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, 17.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, -17.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, -19.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 	}
 
-	for (float i = -1.3; i > -42; i = i - 2)
+	for (float i = -10.5; i > -22; i = i - 2)
 	{
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, 27.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, 29.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 
 		M = glm::mat4(1.0f);
 		M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-		M = glm::translate(M, glm::vec3(i, -1.0f, -25.0f));
+		M = glm::translate(M, glm::vec3(i, -2.0f, -31.0f));
 		//M = glm::rotate(M2, 90 * PI / 180.0f, glm::vec3(0.0f, 0.1f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 		drawSand(P, V, M);
 	}

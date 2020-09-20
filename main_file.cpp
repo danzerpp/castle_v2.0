@@ -37,7 +37,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "Square.h"
 #include "groundSquare.h"
 #include "Object_Loader.h"
-#include <iostream>
+
 float speed_x = 0.5f;//[radiany/s]
 float speed_y = 0;//[radiany/s]
 float water_speed = 1;
@@ -50,6 +50,7 @@ GLuint castleGroundTex;
 GLuint FlagTex;
 GLuint FireTex;
 GLuint WallTex;
+GLuint CandleTex;
 float yaw = 90;
 float pitch = 0;
 //Bridge
@@ -223,6 +224,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	FlagTex = readTexture("flag.png");
 	FireTex = readTexture("flame.png");
 	WallTex = readTexture("wall.png");
+	CandleTex = readTexture("candle.png");
 	glm::vec3 direction;
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
 
@@ -525,75 +527,52 @@ void texCastleGround(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 
-//void texKostka2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-//	//Tablica ta raczej powinna znaleźć się w pliku myCube.h, ale umieściłem ją tutaj, żeby w tej procedurze zawrzeć (prawie) całe rozwiązanie zadania
-//	//Reszta to wczytanie tekstury - czyli kawałki kodu, które trzeba przekopiować ze slajdów
-//	float myCubeTexCoords[] = {
-//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-//
-//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-//
-//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-//
-//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-//
-//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-//
-//		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-//		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-//	};
+void texCandle(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+	//Tablica ta raczej powinna znaleźć się w pliku myCube.h, ale umieściłem ją tutaj, żeby w tej procedurze zawrzeć (prawie) całe rozwiązanie zadania
+	//Reszta to wczytanie tekstury - czyli kawałki kodu, które trzeba przekopiować ze slajdów
+	float myCubeTexCoords[] = {
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
 
-	//float myCubeNormals[] = {
-	//	0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
-	//	0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
 
-	//	0,0, 1,0, 0,0, 1,0, 0,0, 1,0,
-	//	0,0, 1,0, 0,0, 1,0, 0,0, 1,0,
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
 
-	//	0,-1,0,0, 0,-1,0,0, 0,-1,0,0,
-	//	0,-1,0,0, 0,-1,0,0, 0,-1,0,0,
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
 
-	//	0, 1,0,0, 0, 1,0,0, 0, 1,0,0,
-	//	0, 1,0,0, 0, 1,0,0, 0, 1,0,0,
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
 
-	//	-1,0,0,0, -1,0,0,0, -1,0,0,0,
-	//	-1,0,0,0, -1,0,0,0, -1,0,0,0,
-
-	//	1,0,0,0, 1,0,0,0, 1,0,0,0,
-	//	1,0,0,0, 1,0,0,0, 1,0,0,0,
-	//};
-
-	//spLambertTextured->use(); //Aktywuj program cieniujący
-
-	//glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
-	//glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
-	//glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+	};
 
 
-	//glEnableVertexAttribArray(spLambertTextured->a("vertex"));
-	//glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+	spColored->use(); //Aktywuj program cieniujący
 
-	//glEnableVertexAttribArray(spLambertTextured->a("texCoord"));
-	//glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
 
-	//glEnableVertexAttribArray(spLambertTextured->a("normal"));
-	//glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, myCubeNormals); //Wektory normalne bierz z tablicy myCubeNormals
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, tex);
-	//glUniform1i(spLambertTextured->u("tex"), 0);
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
 
-	//glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
 
-	//glDisableVertexAttribArray(spLambertTextured->a("vertex"));
-	//glDisableVertexAttribArray(spLambertTextured->a("color"));
-	//glDisableVertexAttribArray(spLambertTextured->a("normal"));
-//}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, CandleTex);
+	glUniform1i(spTextured->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("color"));
+}
 
 void drawSand(glm::mat4 P, glm::mat4 V, glm::mat4 M)
 {
@@ -645,6 +624,53 @@ void texSciana(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
 	spColored->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
+	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
+	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+
+
+	glEnableVertexAttribArray(spColored->a("vertex"));
+	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Współrzędne wierzchołków bierz z tablicy myCubeVertices
+
+	glEnableVertexAttribArray(spColored->a("texCoord"));
+	glVertexAttribPointer(spColored->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Współrzędne teksturowania bierz z tablicy myCubeTexCoords
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, WallTex);
+	glUniform1i(spColored->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	glDisableVertexAttribArray(spColored->a("vertex"));
+	glDisableVertexAttribArray(spColored->a("color"));
+}
+
+void texSciana2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+	//Tablica ta raczej powinna znaleźć się w pliku myCube.h, ale umieściłem ją tutaj, żeby w tej procedurze zawrzeć (prawie) całe rozwiązanie zadania
+	//Reszta to wczytanie tekstury - czyli kawałki kodu, które trzeba przekopiować ze slajdów
+	float myCubeTexCoords[] = {
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+	};
+
+
+	spTextured->use(); //Aktywuj program cieniujący
 
 	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
 	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
@@ -843,7 +869,7 @@ void drawFlag(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 
 		myFlat[vertice + 4] = 3.0f;
 		myFlat[vertice + 5] = -2;
-		myFlat[vertice + 6] = 0.1;//* cos(water_speed * (time + (30 + i)));
+		myFlat[vertice + 6] = 0.9;//* cos(water_speed * (time + (30 + i)));
 		myFlat[vertice + 7] = 1;
 
 		myFlat[vertice + 8] = 3.0f;
@@ -867,7 +893,7 @@ void drawFlag(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 
 		myFlat[vertice + 20] = 3.0f;
 		myFlat[vertice + 21] = -2;
-		myFlat[vertice + 22] = 0.1;//* cos(water_speed * (time + (30 + i)));
+		myFlat[vertice + 22] = 0.9;
 		myFlat[vertice + 23] = 1;
 
 
@@ -1121,7 +1147,7 @@ void	drawFire(glm::mat4 P, glm::mat4 V, glm::mat4 M, float angle) {
 
 		texVertice += 12;
 	}
-	spTextured->use(); //Aktywuj program cieniujący
+	spColored->use(); //Aktywuj program cieniujący
 
 	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
 	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
@@ -1231,12 +1257,6 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 
 
 
-
-
-
-
-
-
 	for (float i = -2; i < 51; i = i + 8)
 	{
 		M = glm::mat4(1.0f);
@@ -1255,9 +1275,19 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	drawFlag(P, V, M, angle_x);
 
 	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(18.9f, 14.5, -3.75f));
+	M = glm::scale(M, glm::vec3(0.05f, 1, 0.5f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
 	M = glm::translate(M, glm::vec3(17.5, 15.5, 6));
 	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
 	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(18.9f, 14.5, 6.25f));
+	M = glm::scale(M, glm::vec3(0.05f, 1, 0.5f));
+	drawBridge(P, V, M);
 
 	M = glm::mat4(1.0f);
 	M = glm::translate(M, glm::vec3(27.5, 15.5, -4));
@@ -1265,9 +1295,19 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	drawFlag(P, V, M, angle_x);
 
 	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(28.9f, 14.5, -3.75f));
+	M = glm::scale(M, glm::vec3(0.05f, 1, 0.5f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
 	M = glm::translate(M, glm::vec3(27.5, 15.5, 6));
 	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
 	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(28.9f, 14.5, 6.25f));
+	M = glm::scale(M, glm::vec3(0.05f, 1, 0.5f));
+	drawBridge(P, V, M);
 
 	M = glm::mat4(1.0f);
 	M = glm::translate(M, glm::vec3(-20.5, 15.5, -4));
@@ -1275,9 +1315,19 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	drawFlag(P, V, M, angle_x);
 
 	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-19.1f, 14.5, -3.75f));
+	M = glm::scale(M, glm::vec3(0.05f, 1, 0.5f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
 	M = glm::translate(M, glm::vec3(-20.5, 15.5, 6));
 	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
 	drawFlag(P, V, M, angle_x);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-19.1f, 14.5, 6.25f));
+	M = glm::scale(M, glm::vec3(0.05f, 1, 0.5f));
+	drawBridge(P, V, M);
 
 	M = glm::mat4(1.0f);
 	M = glm::translate(M, glm::vec3(-30.5, 15.5, -4));
@@ -1285,21 +1335,94 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	drawFlag(P, V, M, angle_x);
 
 	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-29.1f, 14.5, -3.75f));
+	M = glm::scale(M, glm::vec3(0.05f, 1, 0.5f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
 	M = glm::translate(M, glm::vec3(-30.5, 15.5, 6));
 	M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
 	drawFlag(P, V, M, angle_x);
 
-	//OGIEŃ
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(-29.1f, 14.5, 6.25f));
+	M = glm::scale(M, glm::vec3(0.05f, 1, 0.5f));
+	drawBridge(P, V, M);
+
+	//ŚWIECZKA
 	for (float i = 0; i < 20; i++)
 	{
 		M = glm::mat4(1.0f);
-		M = glm::translate(M, glm::vec3(5, -0.9, 27));
-		M = glm::scale(M, glm::vec3(0.08f, 0.08f, 0.08f));
+		M = glm::translate(M, glm::vec3(5.5f, -0.165f, 27.5));
+		M = glm::scale(M, glm::vec3(0.01f, 0.01f, 0.01f));
 		drawFire(P, V, M, angle_x);
 	}
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(5, -0.75, 27));
+	M = glm::scale(M, glm::vec3(0.01f, 0.20, 0.3f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(6, -0.75, 27));
+	M = glm::scale(M, glm::vec3(0.01f, 0.20, 0.3f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(5, -0.75, 28));
+	M = glm::scale(M, glm::vec3(0.01f, 0.20, 0.3f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(6, -0.75, 28));
+	M = glm::scale(M, glm::vec3(0.01f, 0.20, 0.3f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(5.5f, -0.38, 26.9));
+	M = glm::scale(M, glm::vec3(0.27f, 0.02, 4.2f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(5.5f, -0.28, 27.5));
+	M = glm::scale(M, glm::vec3(0.04f, 0.14f, 0.04f));
+	texCandle(P, V, M);
+
+	//Łóżko
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(0, -0.75, 31.5));
+	M = glm::scale(M, glm::vec3(0.01f, 0.25, 0.3f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(3, -0.75, 30));
+	M = glm::scale(M, glm::vec3(0.01f, 0.25, 0.3f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(3, -0.75, 31.5));
+	M = glm::scale(M, glm::vec3(0.01f, 0.25, 0.3f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(0, -0.75, 30));
+	M = glm::scale(M, glm::vec3(0.01f, 0.25, 0.3f));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(1.5 , -0.6, 30.05f));
+	M = glm::scale(M, glm::vec3(0.9f, 0.02, 5));
+	drawBridge(P, V, M);
+
+	M = glm::mat4(1.0f);
+	M = glm::translate(M, glm::vec3(1.6, -0.41, 30.73));
+	M = glm::scale(M, glm::vec3(1.6, 0.10f, 0.6));
+	texCandle(P, V, M);
+
+
 	//BUDYNEK ŚRODEK
 
-	//Tutaj zacznij oświetlać dupa
 	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 	M = glm::translate(M, glm::vec3(1, 0, 33));
 	M = glm::scale(M, glm::vec3(7, 2, 0.5f));
@@ -1329,6 +1452,40 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 	M = glm::translate(M, glm::vec3(1, 2, 28));
 	M = glm::scale(M, glm::vec3(7.9f, 0.5f, 6.1f));
 	texSciana(P, V, M);
+
+	//ZEWN
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(1, 0, 33.1));
+	M = glm::scale(M, glm::vec3(7, 2, 0.5f));
+	texSciana2(P, V, M);
+
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(5.51, 0, 22));
+	M = glm::scale(M, glm::vec3(3.5, 2, 0.5f));
+	texSciana2(P, V, M);
+
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-3.52f, 0, 22));
+	M = glm::scale(M, glm::vec3(3.5, 2, 0.5f));
+	texSciana2(P, V, M);
+
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(8.2, 0, 28));
+	M = glm::scale(M, glm::vec3(0.5f, 2, 6));
+	texSciana2(P, V, M);
+
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(-7, 0, 28));
+	M = glm::scale(M, glm::vec3(0.5f, 2, 6));
+	texSciana2(P, V, M);
+
+	M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, glm::vec3(1, 2.1, 27.));
+	M = glm::scale(M, glm::vec3(7.9f, 0.5f, 6.1f));
+	texSciana2(P, V, M);
+
+
+
 	for (float i = -5; i < 9; i = i + 2)
 	{
 
@@ -1337,16 +1494,12 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y, float bridge_an
 				M = glm::mat4(1.0f);
 				M = glm::translate(M, glm::vec3(i, -1.99f, j));
 				drawGroundInRoom(P, V, M);
-			
-		
-
 		}
 
 
 	}
-	//tutaj skończ
-
-
+	
+	
 
 	for (float i = -61; i < 60; i = i + 2)
 	{
